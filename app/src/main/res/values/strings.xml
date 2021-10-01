@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Focus Code</string>
     <string name="codeTextLabel">Scan something ...</string>
+    <string name="historyLabel">Historial</string>
+    <string name="generatorQRLabel">Generador</string>
+    <string name="settingsLabel">Ajustes</string>
+    <string name="scannerModeLabel">Escanear</string>
 </resources>
