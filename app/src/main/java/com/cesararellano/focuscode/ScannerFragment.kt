@@ -60,7 +60,9 @@ class ScannerFragment : Fragment() {
 
             errorCallback = ErrorCallback {
                 requireActivity().runOnUiThread {
-                    Log.d( TAG, "Camera initialization error: ${ it.message }" )
+                    goToSettingsApp()
+                    Toast.makeText(context, "Por favor active el permiso de la cámara, si desea escanear", Toast.LENGTH_LONG).show()
+
                 }
             }
         }
@@ -88,22 +90,12 @@ class ScannerFragment : Fragment() {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        fun innerCheck(name: String) {
-            if(grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                goToSettingsApp()
-
-                Toast.makeText(context,
-                    "$name permission refused",
-                    Toast.LENGTH_SHORT).show()
-            } else {
-
-                Toast.makeText(context,
-                    "$name permission granted",
-                    Toast.LENGTH_SHORT).show()
-            }
+        if(grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+            goToSettingsApp()
+            Toast.makeText(context, "Por favor active el permiso de la cámara, si desea escanear", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(context, "Permiso concedido", Toast.LENGTH_SHORT).show()
         }
-
-        innerCheck("Camera")
     }
 
     private fun showDialog() {
@@ -111,8 +103,8 @@ class ScannerFragment : Fragment() {
 
         val builder = AlertDialog.Builder(context)
         builder.apply {
-            setMessage("Permission to access your camera is required to use this app")
-            setTitle("Permission required")
+            setMessage("El permiso para acceder a su cámara es requerido si desea escanear")
+            setTitle("Permiso Requerido")
             setPositiveButton("Ok") { _, _ ->
                 ActivityCompat.requestPermissions(requireActivity(), arrayOf(permission), CAMERA_REQUEST_CODE)
             }
