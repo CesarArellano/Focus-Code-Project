@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_options"
+    app:startDestination="@id/historyFragment">
+
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="com.cesararellano.focuscode.HistoryFragment"
+        android:label="Historial de Scans"
+        tools:layout="@layout/fragment_history" />
+    <fragment
+        android:id="@+id/scannerFragment"
+        android:name="com.cesararellano.focuscode.ScannerFragment"
+        android:label="Focus Code"
+        tools:layout="@layout/fragment_scanner" />
+    <fragment
+        android:id="@+id/generatorFragment"
+        android:name="com.cesararellano.focuscode.GeneratorFragment"
+        android:label="Generador de Códigos"
+        tools:layout="@layout/fragment_generator" />
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.cesararellano.focuscode.SettingsFragment"
+        android:label="Ajustes"
+        tools:layout="@layout/fragment_settings" />
+</navigation>

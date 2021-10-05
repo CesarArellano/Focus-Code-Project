@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/webHistory"
+        android:id="@+id/historyFragment"
         android:title="@string/historyLabel"
         android:icon="@drawable/ic_history"
         />
     <item
-        android:id="@+id/mapHistory"
+        android:id="@+id/scannerFragment"
         android:title="@string/scannerModeLabel"
         android:icon="@drawable/ic_baseline_qr_code_scanner_24"
         />
 
     <item
-        android:id="@+id/generatorQR"
+        android:id="@+id/generatorFragment"
         android:title="@string/generatorQRLabel"
         android:icon="@drawable/ic_baseline_qr_code_24"
         />
     <item
-        android:id="@+id/settings"
+        android:id="@+id/settingsFragment"
         android:title="@string/settingsLabel"
         android:icon="@drawable/ic_settings"
         />

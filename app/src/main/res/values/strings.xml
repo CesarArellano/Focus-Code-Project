@@ -5,4 +5,6 @@
     <string name="generatorQRLabel">Generador</string>
     <string name="settingsLabel">Ajustes</string>
     <string name="scannerModeLabel">Escanear</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
