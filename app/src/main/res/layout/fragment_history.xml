@@ -3,15 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#8BC34A"
     tools:context=".HistoryFragment">
 
-    <TextView
+
+    <ListView
+        android:id="@+id/historyList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:textColor="@color/white"
-        android:textSize="30sp"
-        android:text="History Page" />
-
+        android:divider="@android:color/transparent"/>
 </FrameLayout>
