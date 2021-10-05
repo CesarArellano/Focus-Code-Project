@@ -8,19 +8,10 @@
 
     <com.budiyev.android.codescanner.CodeScannerView
         android:layout_width="match_parent"
-        android:layout_height="400dp"
+        android:layout_height="match_parent"
         android:id="@+id/scanner_view"
         app:autoFocusButtonColor="@color/white"
         app:autoFocusButtonVisible="true"
         app:flashButtonColor="@color/white"
         app:maskColor="#6C000000"/>
-
-    <TextView
-        android:id="@+id/codeTextLabel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="40dp"
-        android:gravity="center"
-        android:text="@string/codeTextLabel" />
 </FrameLayout>

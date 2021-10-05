@@ -1,16 +1,19 @@
 package com.cesararellano.focuscode
 
-import android.app.Activity
+import android.app.AlertDialog
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.navigation.Navigation
 import com.budiyev.android.codescanner.AutoFocusMode
 import com.budiyev.android.codescanner.CodeScanner
 import com.budiyev.android.codescanner.CodeScannerView
@@ -29,14 +32,14 @@ class ScannerFragment : Fragment() {
     ): View {
         val fragmentView = inflater.inflate(R.layout.fragment_scanner, container, false)
 
-        setupPermissions(fragmentView)
+        checkForPermissions()
         codeScanner(fragmentView)
+
         return fragmentView
     }
 
     private fun codeScanner(fragmentView:View) {
         val scannerView = fragmentView.findViewById<CodeScannerView>(R.id.scanner_view)
-        val codeTextLabel = fragmentView.findViewById<TextView>(R.id.codeTextLabel)
         codeScanner = CodeScanner(fragmentView.context, scannerView)
 
         codeScanner.apply {
@@ -49,14 +52,14 @@ class ScannerFragment : Fragment() {
             isFlashEnabled = false
 
             decodeCallback = DecodeCallback {
-                (fragmentView.context as Activity).runOnUiThread {
-                    codeTextLabel.text = it.text
-                    //codeScanner.stopPreview()
+                requireActivity().runOnUiThread {
+                    Log.d(TAG, "Texto escaneado: ${ it.text }")
+                    Navigation.findNavController(fragmentView).navigate(R.id.historyFragment)
                 }
             }
 
             errorCallback = ErrorCallback {
-                (fragmentView.context as Activity).runOnUiThread {
+                requireActivity().runOnUiThread {
                     Log.d( TAG, "Camera initialization error: ${ it.message }" )
                 }
             }
@@ -67,37 +70,68 @@ class ScannerFragment : Fragment() {
         }
     }
 
-    private fun setupPermissions(fragmentView:View) {
-        val permission = ContextCompat.checkSelfPermission( fragmentView.context,
-            android.Manifest.permission.CAMERA )
 
-        if( permission != PackageManager.PERMISSION_GRANTED ) {
-            makeRequest()
+    private fun checkForPermissions() {
+        val permission = android.Manifest.permission.CAMERA
+        when {
+            ContextCompat.checkSelfPermission(requireContext(), permission) == PackageManager.PERMISSION_GRANTED -> {
+                Toast.makeText(context, "¡Comienza a escanear!", Toast.LENGTH_SHORT).show()
+            }
+            shouldShowRequestPermissionRationale(permission) -> showDialog()
+            else -> ActivityCompat.requestPermissions(requireActivity(), arrayOf(permission), CAMERA_REQUEST_CODE)
         }
-
     }
 
-    private fun makeRequest() {
-        requestPermissions(
-            arrayOf(android.Manifest.permission.CAMERA),
-            CAMERA_REQUEST_CODE
-        )
-    }
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        when(requestCode) {
-            CAMERA_REQUEST_CODE -> {
-                if( grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED ) {
-                    println("You need the camera permission to be able to use this app")
-                    //Toast.makeText(fragmentView.context, "You need the camera permission to be able to use this app", Toast.LENGTH_SHORT).show()
-                }
+        fun innerCheck(name: String) {
+            if(grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                goToSettingsApp()
+
+                Toast.makeText(context,
+                    "$name permission refused",
+                    Toast.LENGTH_SHORT).show()
+            } else {
+
+                Toast.makeText(context,
+                    "$name permission granted",
+                    Toast.LENGTH_SHORT).show()
             }
         }
+
+        innerCheck("Camera")
     }
+
+    private fun showDialog() {
+        val permission = android.Manifest.permission.CAMERA
+
+        val builder = AlertDialog.Builder(context)
+        builder.apply {
+            setMessage("Permission to access your camera is required to use this app")
+            setTitle("Permission required")
+            setPositiveButton("Ok") { _, _ ->
+                ActivityCompat.requestPermissions(requireActivity(), arrayOf(permission), CAMERA_REQUEST_CODE)
+            }
+        }
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
+    }
+
+    private fun goToSettingsApp() {
+        val intend = Intent()
+        intend.action = android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+        intend.addCategory(Intent.CATEGORY_DEFAULT)
+        intend.data = Uri.parse("package:" + requireActivity().applicationContext.packageName)
+        intend.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        intend.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
+        intend.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
+        startActivity(intend)
+    }
+
     override fun onResume() {
         super.onResume()
         codeScanner.startPreview()
