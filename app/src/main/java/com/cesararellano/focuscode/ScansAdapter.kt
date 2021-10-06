@@ -24,7 +24,7 @@ class ScansAdapter(private val mcontext: Context, private val scansList: List<Sc
         layout.findViewById<TextView>(R.id.scanCodeLabel).text = scanCode
         layout.findViewById<TextView>(R.id.dateScanLabel).text = scanItem.scanDate.toString()
         val scanIcon = layout.findViewById<ImageView>(R.id.scanIcon)
-        if( scanItem.scanCode.contains("http") ) {
+        if( scanItem.scanType.contains("http") ) {
             scanIcon.setImageResource(R.drawable.ic_web)
         } else {
             scanIcon.setImageResource(R.drawable.ic_baseline_map_24)
