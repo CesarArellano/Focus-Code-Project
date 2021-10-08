@@ -39,8 +39,10 @@ class GeneratorFragment : Fragment() {
         shareButton.isEnabled = false
         generatorButton.setOnClickListener{
             it.hideKeyboard()
-            getCode()
-            shareButton.isEnabled = true
+            if( textToConvertEditText.text.isNotEmpty() ) {
+                getCode()
+                shareButton.isEnabled = true
+            }
         }
 
         shareButton.setOnClickListener {
