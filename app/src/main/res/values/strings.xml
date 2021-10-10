@@ -1,16 +1,21 @@
 <resources>
     <string name="app_name">Focus Code</string>
-    <string name="codeTextLabel">Scan something ...</string>
+    <string name="codeTextLabel">Scan something …</string>
     <string name="historyLabel">Historial</string>
     <string name="generatorQRLabel">Generador</string>
     <string name="settingsLabel">Ajustes</string>
     <string name="scannerModeLabel">Escanear</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="scanIconContent">Icono Scan</string>
     <string name="textToConvertEditText">Ingrese el texto a convertir</string>
     <string name="generatorButton">Generar</string>
     <string name="shareButton">Compartir</string>
     <string name="qrCodeImageLabel">Nuevo Código QR</string>
     <string name="barcodeImageLabel">Nuevo Código de barras</string>
+    <string name="removeAdsButton">Remover publicidad por $49</string>
+    <string name="themeLabel">Tema</string>
+    <string name="themeDropdownLabel">Selecciona un tema</string>
+    <string-array name="themes">
+        <item>Claro</item>
+        <item>Oscuro</item>
+    </string-array>
 </resources>
