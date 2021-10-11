@@ -1,5 +1,7 @@
 package com.cesararellano.focuscode
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -28,9 +30,27 @@ class HistoryFragment : Fragment() {
         historyList.adapter = adapter
 
         historyList.setOnItemClickListener { _, _, position, _ ->
-            println(scanList[position].scanCode)
+            val currentScan = scanList[position]
+            if(currentScan.scanType == "http") {
+                goToUrl(currentScan.scanCode)
+            } else {
+                goToMapActivity(currentScan.scanCode)
+            }
         }
 
         return view
+    }
+
+    private fun goToMapActivity(scanCode: String) {
+        val mapIntent = Intent(requireContext(), MapActivity::class.java).apply {
+            putExtra("PLACE_LOCATION", scanCode)
+        }
+
+        startActivity(mapIntent)
+    }
+
+    private fun goToUrl(url: String) {
+        val uri:Uri = Uri.parse(url)
+        startActivity( Intent(Intent.ACTION_VIEW, uri) )
     }
 }
