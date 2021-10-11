@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ListView
-import java.util.*
 
 
 class HistoryFragment : Fragment() {
@@ -20,14 +19,15 @@ class HistoryFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_history, container, false)
 
-        val scanItem = ScanItem("https://github.com/CesarArellano", Calendar.getInstance().time, "http")
-        val scanItem2 = ScanItem("geo:13.4545, -92.23232", Calendar.getInstance().time, "geo")
-
-        val scanList = listOf(scanItem, scanItem2)
-        val adapter = ScansAdapter(requireContext(), scanList)
-
+        var scanList = emptyList<ScanItem>()
+        val database = AppDatabase.getDatabase(view.context)
         val historyList = view.findViewById<ListView>(R.id.historyList)
-        historyList.adapter = adapter
+
+        database.scans().getAllScans().observe(viewLifecycleOwner, {
+            scanList = it
+            val adapter = ScansAdapter(requireContext(), scanList)
+            historyList.adapter = adapter
+        })
 
         historyList.setOnItemClickListener { _, _, position, _ ->
             val currentScan = scanList[position]
