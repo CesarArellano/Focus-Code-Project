@@ -5,7 +5,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +19,10 @@ import com.budiyev.android.codescanner.CodeScannerView
 import com.budiyev.android.codescanner.DecodeCallback
 import com.budiyev.android.codescanner.ErrorCallback
 import com.budiyev.android.codescanner.ScanMode
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.util.*
 
 private const val CAMERA_REQUEST_CODE = 101
 private const val TAG = "ScannerFragment"
@@ -39,6 +42,7 @@ class ScannerFragment : Fragment() {
     }
 
     private fun codeScanner(fragmentView:View) {
+        val database = AppDatabase.getDatabase(requireContext())
         val scannerView = fragmentView.findViewById<CodeScannerView>(R.id.scanner_view)
         codeScanner = CodeScanner(fragmentView.context, scannerView)
 
@@ -53,7 +57,27 @@ class ScannerFragment : Fragment() {
 
             decodeCallback = DecodeCallback {
                 requireActivity().runOnUiThread {
-                    Log.d(TAG, "Texto escaneado: ${ it.text }")
+
+                    codeScanner.stopPreview()
+                    val scanType = when {
+                        it.text.contains("http") -> {
+                            "http"
+                        }
+                        else -> {
+                            "geo"
+                        }
+                    }
+                    val scan = ScanItem(it.text, Calendar.getInstance().time.toString(), scanType)
+                    //Acción asíncrona (Corrutina)
+                    CoroutineScope(Dispatchers.IO).launch {
+                        database.scans().insertScan(scan)
+                    }
+
+                    if(scanType == "http") {
+                        goToUrl(scan.scanCode)
+                    } else {
+                        goToMapActivity(scan.scanCode)
+                    }
                     Navigation.findNavController(fragmentView).navigate(R.id.historyFragment)
                 }
             }
@@ -62,7 +86,6 @@ class ScannerFragment : Fragment() {
                 requireActivity().runOnUiThread {
                     goToSettingsApp()
                     Toast.makeText(context, "Por favor active el permiso de la cámara, si desea escanear", Toast.LENGTH_LONG).show()
-
                 }
             }
         }
@@ -133,5 +156,19 @@ class ScannerFragment : Fragment() {
         super.onPause()
         codeScanner.releaseResources()
     }
+
+    private fun goToMapActivity(scanCode: String) {
+        val mapIntent = Intent(requireContext(), MapActivity::class.java).apply {
+            putExtra("PLACE_LOCATION", scanCode)
+        }
+
+        startActivity(mapIntent)
+    }
+
+    private fun goToUrl(url: String) {
+        val uri:Uri = Uri.parse(url)
+        startActivity( Intent(Intent.ACTION_VIEW, uri) )
+    }
 }
+
 

@@ -2,7 +2,6 @@ package com.cesararellano.focuscode
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 
@@ -14,9 +13,9 @@ interface ScansDao {
     @Insert
     fun insertScan(vararg scan: ScanItem)
 
-    @Delete
-    fun deleteScan(scanId: String)
+    @Query("DELETE FROM Scans WHERE scanId = :scanId")
+    fun deleteScan(scanId: Int)
 
-    @Delete
+    @Query("DELETE FROM Scans")
     fun deleteAllScans()
 }

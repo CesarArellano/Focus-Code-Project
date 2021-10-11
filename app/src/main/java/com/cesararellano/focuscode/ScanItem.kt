@@ -3,24 +3,16 @@ package com.cesararellano.focuscode
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.android.gms.maps.model.LatLng
-import java.util.*
+import java.io.Serializable
 
 @Entity(tableName = "scans")
 class ScanItem(
-    val scanCode:String,
-    val scanDate:Date,
-    var scanType:String,
+    val scanCode: String,
+    val scanDate: String,
+    var scanType: String,
     @PrimaryKey(autoGenerate = true)
     var scanId: Int = 0,
-    ) {
-
-    init {
-        if(this.scanCode.contains("http")) {
-            this.scanType = "http"
-        } else {
-            this.scanType = "geo"
-        }
-    }
+    ): Serializable {
 
     private fun getLatLng():LatLng {
         val latLng = this.scanCode.substring(4).split(',');
