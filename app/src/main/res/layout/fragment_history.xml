@@ -6,9 +6,18 @@
     tools:context=".HistoryFragment">
 
 
+    <ImageView
+        android:id="@+id/emptyScansImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/emptyScansLabel"
+        android:src="@drawable/no_history" />
+
     <ListView
         android:id="@+id/historyList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:divider="@android:color/transparent"/>
+        android:divider="@android:color/transparent">
+    </ListView>
+
 </FrameLayout>
