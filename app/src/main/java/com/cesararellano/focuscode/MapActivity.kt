@@ -16,9 +16,14 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
         placeLocation = intent.getStringExtra("PLACE_LOCATION") ?: "geo:-25.363,131.044"
-        println(placeLocation)
-        createFragment( )
+        settingsActionBar()
+        createFragment()
+    }
 
+    private fun settingsActionBar() {
+        val actionBar = supportActionBar
+        actionBar?.title ="Mapa"
+        actionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     private fun createFragment() {
@@ -46,5 +51,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         val lat = latLng[0].toDouble()
         val lng = latLng[1].toDouble()
         return LatLng(lat, lng)
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 }
