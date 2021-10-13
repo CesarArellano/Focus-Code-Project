@@ -1,7 +1,10 @@
 package com.cesararellano.focuscode
 
+import android.content.ClipData
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -11,13 +14,30 @@ import com.google.android.gms.maps.model.MarkerOptions
 
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var map: GoogleMap
-    private lateinit var placeLocation: String
+    private lateinit var placeLocationCoordinates: LatLng
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
-        placeLocation = intent.getStringExtra("PLACE_LOCATION") ?: "geo:-25.363,131.044"
+        val placeLocation = intent.getStringExtra("PLACE_LOCATION") ?: "geo:-25.363,131.044"
+        placeLocationCoordinates = getLatLng(placeLocation)
         settingsActionBar()
         createFragment()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.map_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        when( item.itemId ) {
+            R.id.placeLocationItem -> {
+                moveGoogleMapsCamera(placeLocationCoordinates)
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun settingsActionBar() {
@@ -33,17 +53,13 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
-        createMarker( getLatLng(placeLocation) )
+        createMarker( placeLocationCoordinates )
     }
 
     private fun createMarker(coordinates: LatLng) {
         val marker = MarkerOptions().position(coordinates).title("Lugar escaneado")
         map.addMarker(marker)
-        map.animateCamera(
-            CameraUpdateFactory.newLatLngZoom(coordinates, 18f), // Zoom in floats
-            1000,
-            null
-        )
+        moveGoogleMapsCamera(coordinates)
     }
 
     private fun getLatLng(scanCode:String): LatLng {
@@ -51,6 +67,14 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         val lat = latLng[0].toDouble()
         val lng = latLng[1].toDouble()
         return LatLng(lat, lng)
+    }
+
+    private fun moveGoogleMapsCamera(coordinates: LatLng) {
+        map.animateCamera(
+            CameraUpdateFactory.newLatLngZoom(coordinates, 18f), // Zoom in floats
+            800,
+            null
+        )
     }
 
     override fun onSupportNavigateUp(): Boolean {

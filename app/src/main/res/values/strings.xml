@@ -14,6 +14,7 @@
     <string name="removeAdsButton">Remover publicidad por $49</string>
     <string name="themeLabel">Tema</string>
     <string name="themeDropdownLabel">Selecciona un tema</string>
+    <string name="placeLocationItem">Reubicar</string>
     <string-array name="themes">
         <item>Claro</item>
         <item>Oscuro</item>
