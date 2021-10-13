@@ -56,29 +56,44 @@
             app:layout_constraintStart_toEndOf="@+id/generatorButton"
             app:layout_constraintTop_toTopOf="@+id/generatorButton" />
 
-        <ImageView
-            android:id="@+id/qrCodeImage"
-            android:layout_width="250dp"
-            android:layout_height="250dp"
-            android:layout_marginTop="20dp"
-            android:src="@drawable/qr_placeholder"
-            android:contentDescription="@string/qrCodeImageLabel"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/codeContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.502"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/generatorButton"
-            tools:ignore="MissingConstraints" />
+            app:layout_constraintTop_toBottomOf="@+id/shareButton">
 
-        <ImageView
-            android:id="@+id/barcodeImage"
-            android:layout_width="250dp"
-            android:layout_height="125dp"
-            android:layout_marginTop="10dp"
-            android:src="@drawable/barcode_placeholder"
-            android:contentDescription="@string/barcodeImageLabel"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/qrCodeImage"
-            tools:ignore="MissingConstraints" />
+            <ImageView
+                android:id="@+id/qrCodeImage"
+                android:layout_width="250dp"
+                android:layout_height="250dp"
+                android:layout_marginTop="8dp"
+                android:contentDescription="@string/qrCodeImageLabel"
+                android:src="@drawable/qr_placeholder"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="MissingConstraints" />
+
+            <ImageView
+                android:id="@+id/barcodeImage"
+                android:layout_width="250dp"
+                android:layout_height="125dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:contentDescription="@string/barcodeImageLabel"
+                android:src="@drawable/barcode_placeholder"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/qrCodeImage"
+                tools:ignore="MissingConstraints" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
