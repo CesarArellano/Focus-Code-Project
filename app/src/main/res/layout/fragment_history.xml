@@ -5,7 +5,6 @@
     android:layout_height="match_parent"
     tools:context=".HistoryFragment">
 
-
     <ImageView
         android:id="@+id/emptyScansImage"
         android:layout_width="wrap_content"

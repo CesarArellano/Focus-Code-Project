@@ -18,7 +18,7 @@
     <string name="deleteHistoryButton">Eliminar historial</string>
     <string name="emptyScansLabel">Sin Scans</string>
     <string-array name="themes">
-        <item>Claro</item>
+        <item >Claro</item>
         <item>Oscuro</item>
     </string-array>
 </resources>
