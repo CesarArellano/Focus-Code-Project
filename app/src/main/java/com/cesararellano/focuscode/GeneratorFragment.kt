@@ -74,7 +74,7 @@ class GeneratorFragment : Fragment() {
     private fun generateQrCode() {
         val textToConvert = textToConvertEditText.text.toString()
         val multiFormatWriter = MultiFormatWriter()
-        val bitMatrix: BitMatrix = multiFormatWriter.encode(textToConvert, BarcodeFormat.QR_CODE, 250, 250)
+        val bitMatrix: BitMatrix = multiFormatWriter.encode(textToConvert, BarcodeFormat.QR_CODE, 200, 200)
         val barcodeEncoder = BarcodeEncoder()
         val bitmap: Bitmap = barcodeEncoder.createBitmap(bitMatrix)
         qrCodeImage.setImageBitmap(bitmap)
@@ -83,7 +83,7 @@ class GeneratorFragment : Fragment() {
     private fun generateBarcode() {
         val textToConvert = textToConvertEditText.text.toString()
         val multiFormatWriter = MultiFormatWriter()
-        val bitMatrix: BitMatrix = multiFormatWriter.encode(textToConvert, BarcodeFormat.CODE_128, 250, 125, null)
+        val bitMatrix: BitMatrix = multiFormatWriter.encode(textToConvert, BarcodeFormat.CODE_128, 250, 100, null)
         val barcodeEncoder = BarcodeEncoder()
         val bitmap: Bitmap = barcodeEncoder.createBitmap(bitMatrix)
         barcodeImage.setImageBitmap(bitmap)
