@@ -1,7 +1,7 @@
 package com.cesararellano.focuscode
 
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -35,13 +35,18 @@ class SettingsFragment : Fragment() {
         themeDropdown.setAdapter( arrayAdapter )
 
         themeDropdown.setOnItemClickListener{ _, _, position, _ ->
-            val theme = when(position) {
+            val userTheme = when(position) {
                 0 -> AppCompatDelegate.MODE_NIGHT_NO
                 1 -> AppCompatDelegate.MODE_NIGHT_YES
                 else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
             }
 
-            AppCompatDelegate.setDefaultNightMode(theme)
+            val sharedPreferences = requireContext().getSharedPreferences("SHARED_PREF", Context.MODE_PRIVATE)
+            val editor: SharedPreferences.Editor = sharedPreferences.edit()
+            editor.putInt("userTheme", userTheme)
+            editor.apply()
+
+            AppCompatDelegate.setDefaultNightMode(userTheme)
         }
 
     }
