@@ -8,7 +8,9 @@
     <ImageView
         android:id="@+id/emptyScansImage"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="250dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="10dp"
         android:contentDescription="@string/emptyScansLabel"
         android:src="@drawable/no_history" />
 

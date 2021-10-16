@@ -12,6 +12,8 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -44,10 +46,17 @@ class MainActivity : AppCompatActivity() {
             setOf(R.id.historyFragment, R.id.scannerFragment, R.id.generatorFragment, R.id.settingsFragment)
         )
 
-
         setupActionBarWithNavController( navController, appBarConfiguration)
         bottomNavigationView.setupWithNavController(navController)
 
+        initLoadAds()
+
+    }
+
+    private fun initLoadAds() {
+        val mainBanner = findViewById<AdView>(R.id.mainBanner)
+        val adRequest = AdRequest.Builder().build()
+        mainBanner.loadAd(adRequest)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
