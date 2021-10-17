@@ -9,10 +9,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.Button
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
 
 class SettingsFragment : Fragment() {
-
+    private lateinit var removeAdsButton:Button
     override fun onResume() {
         super.onResume()
         buildDropdownItems(requireView())
@@ -25,7 +27,28 @@ class SettingsFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_settings, container, false)
         buildDropdownItems(view)
+        removeAdsButton = view.findViewById(R.id.removeAdsButton)
+        removeAdsButton.setOnClickListener{
+            showDialog()
+        }
         return view
+    }
+
+    private fun showDialog() {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Compra")
+        builder.setMessage("¿Desea remover la publicidad pagando $49 MXN?")
+        builder.setPositiveButton("Confirmar") { dialog, _ -> // Confirma la eliminación de la cosa.
+            removeAdsButton.visibility = View.GONE
+            dialog.cancel()
+        }
+
+        builder.setNegativeButton("Cancelar") { dialog, _ -> // Cancela la acción de eliminar.
+            dialog.cancel()
+        }
+
+        val alert: AlertDialog = builder.create()
+        alert.show() // Despliega en pantalla el AlertDialog.
     }
 
     private fun buildDropdownItems(view: View) {

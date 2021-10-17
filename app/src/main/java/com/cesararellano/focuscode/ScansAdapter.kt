@@ -11,6 +11,7 @@ import android.widget.TextView
 
 class ScansAdapter(private val mcontext: Context, private val scansList: List<ScanItem>) : ArrayAdapter<ScanItem>(mcontext, 0, scansList ) {
 
+
     @SuppressLint("ViewHolder")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val layout = LayoutInflater.from(mcontext).inflate(R.layout.scan_item, parent, false)
@@ -22,7 +23,7 @@ class ScansAdapter(private val mcontext: Context, private val scansList: List<Sc
         }
 
         layout.findViewById<TextView>(R.id.scanCodeLabel).text = scanCode
-        layout.findViewById<TextView>(R.id.dateScanLabel).text = scanItem.scanDate.toString()
+        layout.findViewById<TextView>(R.id.dateScanLabel).text = scanItem.scanDate
         val scanIcon = layout.findViewById<ImageView>(R.id.scanIcon)
         if( scanItem.scanType.contains("http") ) {
             scanIcon.setImageResource(R.drawable.ic_web)
