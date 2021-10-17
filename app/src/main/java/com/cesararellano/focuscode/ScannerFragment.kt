@@ -22,10 +22,10 @@ import com.budiyev.android.codescanner.ScanMode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.util.*
 
 private const val CAMERA_REQUEST_CODE = 101
-private const val TAG = "ScannerFragment"
 class ScannerFragment : Fragment() {
     private lateinit var codeScanner: CodeScanner
 
@@ -67,7 +67,8 @@ class ScannerFragment : Fragment() {
                             "geo"
                         }
                     }
-                    val scan = ScanItem(it.text, Calendar.getInstance().time.toString(), scanType)
+                    val currentDate = SimpleDateFormat( "'Fecha:' dd-MM-yyyy, HH:mm", Locale.getDefault() ).format( Date() )
+                    val scan = ScanItem(it.text, currentDate, scanType)
                     //Acción asíncrona (Corrutina)
                     CoroutineScope(Dispatchers.IO).launch {
                         database.scans().insertScan(scan)
