@@ -1,10 +1,11 @@
 package com.cesararellano.focuscode
 
-import android.content.ClipData
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -22,6 +23,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         val placeLocation = intent.getStringExtra("PLACE_LOCATION") ?: "geo:-25.363,131.044"
         placeLocationCoordinates = getLatLng(placeLocation)
         settingsActionBar()
+        initLoadAds()
         createFragment()
     }
 
@@ -80,5 +82,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
         return true
+    }
+    private fun initLoadAds() {
+        val mapBanner = findViewById<AdView>(R.id.mapBanner)
+        val adRequest = AdRequest.Builder().build()
+        mapBanner.loadAd(adRequest)
     }
 }

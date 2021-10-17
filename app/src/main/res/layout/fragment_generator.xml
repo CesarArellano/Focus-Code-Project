@@ -67,8 +67,8 @@
 
             <ImageView
                 android:id="@+id/qrCodeImage"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
+                android:layout_width="225dp"
+                android:layout_height="225dp"
                 android:layout_marginTop="8dp"
                 android:contentDescription="@string/qrCodeImageLabel"
                 android:src="@drawable/qr_placeholder"
@@ -82,14 +82,15 @@
                 android:id="@+id/barcodeImage"
                 android:layout_width="250dp"
                 android:layout_height="100dp"
-                android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:contentDescription="@string/barcodeImageLabel"
                 android:src="@drawable/barcode_placeholder"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.498"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/qrCodeImage"
+                app:layout_constraintVertical_bias="0.0"
                 tools:ignore="MissingConstraints" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
