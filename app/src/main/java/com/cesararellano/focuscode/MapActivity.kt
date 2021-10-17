@@ -1,7 +1,9 @@
 package com.cesararellano.focuscode
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import com.google.android.gms.ads.AdRequest
@@ -13,9 +15,18 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 
+private const val TAG = "MapActivity"
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var map: GoogleMap
     private lateinit var placeLocationCoordinates: LatLng
+
+    override fun onStart() {
+        super.onStart()
+        val sharedPreferences = getSharedPreferences("SHARED_PREF", Context.MODE_PRIVATE)
+        val premiumMode = sharedPreferences.getBoolean("premiumMode", false)
+        Log.d(TAG, "premiumMode: $premiumMode")
+        if( !premiumMode ) initLoadAds()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,7 +34,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         val placeLocation = intent.getStringExtra("PLACE_LOCATION") ?: "geo:-25.363,131.044"
         placeLocationCoordinates = getLatLng(placeLocation)
         settingsActionBar()
-        initLoadAds()
         createFragment()
     }
 
@@ -83,6 +93,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         onBackPressed()
         return true
     }
+
     private fun initLoadAds() {
         val mapBanner = findViewById<AdView>(R.id.mapBanner)
         val adRequest = AdRequest.Builder().build()

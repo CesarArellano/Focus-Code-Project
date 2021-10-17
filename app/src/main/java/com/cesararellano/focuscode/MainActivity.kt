@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -28,9 +29,15 @@ class MainActivity : AppCompatActivity() {
         val editor: SharedPreferences.Editor = sharedPreferences.edit()
         val userTheme = sharedPreferences.getInt("userTheme", 0)
         val premiumMode = sharedPreferences.getBoolean("premiumMode", false)
+
         editor.putBoolean("premiumMode", premiumMode)
         editor.apply()
+
         AppCompatDelegate.setDefaultNightMode(userTheme)
+
+        Log.d(TAG, "premiumMode: $premiumMode")
+
+        if( !premiumMode ) initLoadAds()
     }
 
     private lateinit var bottomNavigationView: BottomNavigationView
@@ -48,8 +55,6 @@ class MainActivity : AppCompatActivity() {
 
         setupActionBarWithNavController( navController, appBarConfiguration)
         bottomNavigationView.setupWithNavController(navController)
-
-        initLoadAds()
 
     }
 
