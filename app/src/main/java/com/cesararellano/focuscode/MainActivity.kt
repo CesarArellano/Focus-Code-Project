@@ -5,8 +5,6 @@ import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -15,9 +13,6 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 private const val TAG = "MainActivity"
 class MainActivity : AppCompatActivity() {
@@ -63,22 +58,4 @@ class MainActivity : AppCompatActivity() {
         mainBanner.loadAd(adRequest)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.history_fragment_menu, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
-        when( item.itemId ) {
-            R.id.deleteHistoryButton -> {
-                val database = AppDatabase.getDatabase(applicationContext)
-                //Acción asíncrona (Corrutina)
-                CoroutineScope(Dispatchers.IO).launch {
-                    database.scans().deleteAllScans()
-                }
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
 }

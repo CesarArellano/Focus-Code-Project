@@ -7,8 +7,16 @@ import android.view.*
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import android.widget.ListView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class HistoryFragment : Fragment() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,6 +66,25 @@ class HistoryFragment : Fragment() {
     private fun goToUrl(url: String) {
         val uri:Uri = Uri.parse(url)
         startActivity( Intent(Intent.ACTION_VIEW, uri) )
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.history_fragment_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        when( item.itemId ) {
+            R.id.deleteHistoryButton -> {
+                val database = AppDatabase.getDatabase( requireContext().applicationContext )
+                //Acción asíncrona (Corrutina)
+                CoroutineScope(Dispatchers.IO).launch {
+                    database.scans().deleteAllScans()
+                }
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
 }
