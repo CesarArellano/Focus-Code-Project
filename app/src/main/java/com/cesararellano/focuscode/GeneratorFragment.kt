@@ -128,11 +128,7 @@ class GeneratorFragment : Fragment() {
             startActivity( Intent.createChooser(shareIntent, "Compartiendo código") )
         } catch (e: Exception) {
             e.printStackTrace()
-            Toast.makeText(
-                requireContext(),
-                "Ocurrió un error al compartir códigos",
-                Toast.LENGTH_LONG
-            ).show()
+            Toast.makeText( context, "Ocurrió un error al compartir códigos", Toast.LENGTH_LONG ).show()
         }
 
     }

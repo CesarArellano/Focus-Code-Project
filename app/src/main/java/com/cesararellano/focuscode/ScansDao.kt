@@ -13,9 +13,6 @@ interface ScansDao {
     @Insert
     fun insertScan(vararg scan: ScanItem)
 
-    @Query("DELETE FROM Scans WHERE scanId = :scanId")
-    fun deleteScan(scanId: Int)
-
     @Query("DELETE FROM Scans")
     fun deleteAllScans()
 }

@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 import java.util.*
 
 private const val CAMERA_REQUEST_CODE = 101
-private const val TAG = "ScannerFragment"
+
 class ScannerFragment : Fragment() {
     private lateinit var codeScanner: CodeScanner
 

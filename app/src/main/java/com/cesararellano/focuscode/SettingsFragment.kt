@@ -1,7 +1,5 @@
 package com.cesararellano.focuscode
 
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -40,12 +38,6 @@ class SettingsFragment : Fragment() {
                 1 -> AppCompatDelegate.MODE_NIGHT_YES
                 else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
             }
-
-            val sharedPreferences = requireContext().getSharedPreferences("SHARED_PREF", Context.MODE_PRIVATE)
-            val editor: SharedPreferences.Editor = sharedPreferences.edit()
-            editor.putInt("userTheme", userTheme)
-            editor.apply()
-
             AppCompatDelegate.setDefaultNightMode(userTheme)
         }
 

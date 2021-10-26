@@ -1,14 +1,9 @@
 package com.cesararellano.focuscode
 
-import android.content.Context
-import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -20,27 +15,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-private const val TAG = "MainActivity"
 class MainActivity : AppCompatActivity() {
-
-    override fun onStart() {
-        super.onStart()
-        val sharedPreferences = getSharedPreferences("SHARED_PREF", Context.MODE_PRIVATE)
-        val editor: SharedPreferences.Editor = sharedPreferences.edit()
-        val userTheme = sharedPreferences.getInt("userTheme", 0)
-        val premiumMode = sharedPreferences.getBoolean("premiumMode", false)
-
-        editor.putBoolean("premiumMode", premiumMode)
-        editor.apply()
-
-        AppCompatDelegate.setDefaultNightMode(userTheme)
-
-        Log.d(TAG, "premiumMode: $premiumMode")
-
-        if( !premiumMode ) initLoadAds()
-    }
-
     private lateinit var bottomNavigationView: BottomNavigationView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -53,10 +30,16 @@ class MainActivity : AppCompatActivity() {
             setOf(R.id.historyFragment, R.id.scannerFragment, R.id.generatorFragment, R.id.settingsFragment)
         )
 
-        setupActionBarWithNavController( navController, appBarConfiguration)
+        setupActionBarWithNavController( navController, appBarConfiguration )
         bottomNavigationView.setupWithNavController(navController)
 
     }
+
+    override fun onStart() {
+        super.onStart()
+        initLoadAds()
+    }
+
 
     private fun initLoadAds() {
         val mainBanner = findViewById<AdView>(R.id.mainBanner)
