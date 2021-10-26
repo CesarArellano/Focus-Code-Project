@@ -7,6 +7,7 @@ import android.view.*
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import android.widget.ListView
+import android.widget.Toast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,7 +30,7 @@ class HistoryFragment : Fragment() {
         val historyList = view.findViewById<ListView>(R.id.historyList)
         val emptyScansImage = view.findViewById<ImageView>(R.id.emptyScansImage)
 
-        database.scans().getAllScans().observe(viewLifecycleOwner, {
+        database.scans().getAllScans().observe( viewLifecycleOwner, {
             scanList = it
             val adapter = ScansAdapter(requireContext(), scanList)
             historyList.adapter = adapter
@@ -45,10 +46,16 @@ class HistoryFragment : Fragment() {
 
         historyList.setOnItemClickListener { _, _, position, _ ->
             val currentScan = scanList[position]
-            if(currentScan.scanType == "http") {
-                goToUrl(currentScan.scanCode)
-            } else {
-                goToMapActivity(currentScan.scanCode)
+            when( currentScan.scanCode ) {
+                "http"-> {
+                    goToUrl(currentScan.scanCode)
+                }
+                "geo" -> {
+                    goToMapActivity(currentScan.scanCode)
+                }
+                else -> {
+                    Toast.makeText(context, "Texto escaneado: ${ currentScan.scanCode }", Toast.LENGTH_LONG).show()
+                }
             }
         }
 
@@ -56,7 +63,7 @@ class HistoryFragment : Fragment() {
     }
 
     private fun goToMapActivity(scanCode: String) {
-        val mapIntent = Intent(requireContext(), MapActivity::class.java).apply {
+        val mapIntent = Intent( requireContext(), MapActivity::class.java ).apply {
             putExtra("PLACE_LOCATION", scanCode)
         }
 

@@ -29,16 +29,28 @@ private const val CAMERA_REQUEST_CODE = 101
 class ScannerFragment : Fragment() {
     private lateinit var codeScanner: CodeScanner
     private lateinit var dateFormat: SimpleDateFormat
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         val fragmentView = inflater.inflate(R.layout.fragment_scanner, container, false)
+
         dateFormat = SimpleDateFormat( "'Fecha:' dd-MM-yyyy, HH:mm", Locale.getDefault() )
         checkForPermissions()
         codeScanner(fragmentView)
 
         return fragmentView
+    }
+
+    override fun onResume() {
+        super.onResume()
+        codeScanner.startPreview()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        codeScanner.releaseResources()
     }
 
     private fun codeScanner(fragmentView:View) {
@@ -77,7 +89,7 @@ class ScannerFragment : Fragment() {
                         database.scans().insertScan(scan)
                     }
 
-                    when(scanType) {
+                    when( scanType ) {
                         "http"-> {
                             goToUrl(scan.scanCode)
                         }
@@ -156,16 +168,6 @@ class ScannerFragment : Fragment() {
         intend.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
         intend.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
         startActivity(intend)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        codeScanner.startPreview()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        codeScanner.releaseResources()
     }
 
     private fun goToMapActivity(scanCode: String) {
