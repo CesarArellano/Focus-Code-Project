@@ -28,13 +28,13 @@ import java.util.*
 private const val CAMERA_REQUEST_CODE = 101
 class ScannerFragment : Fragment() {
     private lateinit var codeScanner: CodeScanner
-
+    private lateinit var dateFormat: SimpleDateFormat
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         val fragmentView = inflater.inflate(R.layout.fragment_scanner, container, false)
-
+        dateFormat = SimpleDateFormat( "'Fecha:' dd-MM-yyyy, HH:mm", Locale.getDefault() )
         checkForPermissions()
         codeScanner(fragmentView)
 
@@ -60,25 +60,35 @@ class ScannerFragment : Fragment() {
 
                     codeScanner.stopPreview()
                     val scanType = when {
-                        it.text.contains("http") -> {
+                        it.text.contains("http")-> {
                             "http"
                         }
-                        else -> {
+                        it.text.contains("geo")-> {
                             "geo"
                         }
+                        else -> {
+                            "other"
+                        }
                     }
-                    val currentDate = SimpleDateFormat( "'Fecha:' dd-MM-yyyy, HH:mm", Locale.getDefault() ).format( Date() )
+                    val currentDate = dateFormat.format( Date() )
                     val scan = ScanItem(it.text, currentDate, scanType)
                     //Acción asíncrona (Corrutina)
                     CoroutineScope(Dispatchers.IO).launch {
                         database.scans().insertScan(scan)
                     }
 
-                    if(scanType == "http") {
-                        goToUrl(scan.scanCode)
-                    } else {
-                        goToMapActivity(scan.scanCode)
+                    when(scanType) {
+                        "http"-> {
+                            goToUrl(scan.scanCode)
+                        }
+                        "geo" -> {
+                            goToMapActivity(scan.scanCode)
+                        }
+                        else -> {
+                            Toast.makeText(context, "Texto escaneado: ${ scan.scanCode }", Toast.LENGTH_LONG).show()
+                        }
                     }
+
                     Navigation.findNavController(fragmentView).navigate(R.id.historyFragment)
                 }
             }

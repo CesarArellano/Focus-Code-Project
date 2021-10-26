@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -14,27 +13,10 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-private const val TAG = "MainActivity"
 class MainActivity : AppCompatActivity() {
-
-    override fun onStart() {
-        super.onStart()
-        val sharedPreferences = getSharedPreferences("SHARED_PREF", Context.MODE_PRIVATE)
-        val editor: SharedPreferences.Editor = sharedPreferences.edit()
-        val userTheme = sharedPreferences.getInt("userTheme", 0)
-        val premiumMode = sharedPreferences.getBoolean("premiumMode", false)
-
-        editor.putBoolean("premiumMode", premiumMode)
-        editor.apply()
-
-        AppCompatDelegate.setDefaultNightMode(userTheme)
-
-        Log.d(TAG, "premiumMode: $premiumMode")
-
-        if( !premiumMode ) initLoadAds()
-    }
-
+    private lateinit var sharedPreferences: SharedPreferences
     private lateinit var bottomNavigationView: BottomNavigationView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -50,6 +32,18 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController( navController, appBarConfiguration)
         bottomNavigationView.setupWithNavController(navController)
 
+        sharedPreferences = getSharedPreferences("SHARED_PREF", Context.MODE_PRIVATE)
+
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val userTheme = sharedPreferences.getInt("userTheme", 0)
+        val premiumMode = sharedPreferences.getBoolean("premiumMode", false)
+
+        AppCompatDelegate.setDefaultNightMode(userTheme)
+
+        if( !premiumMode ) initLoadAds()
     }
 
     private fun initLoadAds() {

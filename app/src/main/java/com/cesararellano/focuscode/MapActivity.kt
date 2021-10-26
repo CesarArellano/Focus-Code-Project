@@ -1,9 +1,9 @@
 package com.cesararellano.focuscode
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import com.google.android.gms.ads.AdRequest
@@ -15,26 +15,25 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 
-private const val TAG = "MapActivity"
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
+    private lateinit var sharedPreferences: SharedPreferences
     private lateinit var map: GoogleMap
     private lateinit var placeLocationCoordinates: LatLng
-
-    override fun onStart() {
-        super.onStart()
-        val sharedPreferences = getSharedPreferences("SHARED_PREF", Context.MODE_PRIVATE)
-        val premiumMode = sharedPreferences.getBoolean("premiumMode", false)
-        Log.d(TAG, "premiumMode: $premiumMode")
-        if( !premiumMode ) initLoadAds()
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
         val placeLocation = intent.getStringExtra("PLACE_LOCATION") ?: "geo:-25.363,131.044"
         placeLocationCoordinates = getLatLng(placeLocation)
+        sharedPreferences = getSharedPreferences("SHARED_PREF", Context.MODE_PRIVATE)
         settingsActionBar()
         createFragment()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val premiumMode = sharedPreferences.getBoolean("premiumMode", false)
+        if( !premiumMode ) initLoadAds()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

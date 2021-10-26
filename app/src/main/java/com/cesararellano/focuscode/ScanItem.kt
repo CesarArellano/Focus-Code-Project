@@ -11,4 +11,4 @@ class ScanItem(
     var scanType: String,
     @PrimaryKey(autoGenerate = true)
     var scanId: Int = 0,
-    ): Serializable
+): Serializable
