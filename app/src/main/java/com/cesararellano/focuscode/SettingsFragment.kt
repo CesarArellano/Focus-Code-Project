@@ -9,12 +9,8 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import androidx.appcompat.app.AppCompatDelegate
 
+// Este fragment es el encargado de mostrar las opciones que tiene la app.
 class SettingsFragment : Fragment() {
-
-    override fun onResume() {
-        super.onResume()
-        buildDropdownItems(requireView())
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -26,12 +22,19 @@ class SettingsFragment : Fragment() {
         return view
     }
 
+    // Construimos de nuevo los items si es que se destruyen en alguna etapa del ciclo de vida.
+    override fun onResume() {
+        super.onResume()
+        buildDropdownItems(requireView())
+    }
+
+    // Creamos los elementos del Dropdown para la selección del tema.
     private fun buildDropdownItems(view: View) {
         val themes = resources.getStringArray(R.array.themes)
         val arrayAdapter = ArrayAdapter(requireContext(), R.layout.theme_dropdown_item, themes)
         val themeDropdown = view.findViewById<AutoCompleteTextView>(R.id.themeDropdown)
         themeDropdown.setAdapter( arrayAdapter )
-
+        // Establecemos las acciones del los items del dropdown.
         themeDropdown.setOnItemClickListener{ _, _, position, _ ->
             val userTheme = when(position) {
                 0 -> AppCompatDelegate.MODE_NIGHT_NO

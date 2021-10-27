@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 
+// Esta clase nos ayuda a centralizar métodos para redirigir al usuario dependiendo del tipo de scan.
 class FocusCodeModel {
 
     fun goToMapActivity(context: Context, scanCode: String): Intent {
