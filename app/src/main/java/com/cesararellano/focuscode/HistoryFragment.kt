@@ -1,14 +1,18 @@
 package com.cesararellano.focuscode
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import android.widget.ListView
 
+// En este fragment se visualiza el historial de scans
 class HistoryFragment : Fragment() {
+    private val focusCodeModel = FocusCodeModel()
+    private var scanList = emptyList<ScanItem>()
+    private lateinit var database: AppDatabase
+    private lateinit var historyList: ListView
+    private lateinit var emptyScansImage: ImageView
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -16,16 +20,21 @@ class HistoryFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_history, container, false)
-        var scanList = emptyList<ScanItem>()
-        val database = AppDatabase.getDatabase(view.context)
-        val historyList = view.findViewById<ListView>(R.id.historyList)
-        val emptyScansImage = view.findViewById<ImageView>(R.id.emptyScansImage)
+        // Obteniendo la instancia de la BD.
+        database = AppDatabase.getDatabase(view.context)
+        // Estableciendo referencias de los elementos de la UI.
+        historyList = view.findViewById(R.id.historyList)
+        emptyScansImage = view.findViewById(R.id.emptyScansImage)
 
-        database.scans().getAllScans().observe(viewLifecycleOwner, {
+        // Poniendo un observer, estilo de listener que escucha los cambios y refresca la vista.
+        database.scans().getAllScans().observe( viewLifecycleOwner, {
             scanList = it
+
+            // Adapter del ListView.
             val adapter = ScansAdapter(requireContext(), scanList)
             historyList.adapter = adapter
 
+            // Evalúa que vista debe mostrar.
             if( scanList.isEmpty() ) {
                 historyList.visibility = View.GONE
                 emptyScansImage.visibility = View.VISIBLE
@@ -35,29 +44,23 @@ class HistoryFragment : Fragment() {
             }
         })
 
+        // Se establecen las acciones que hará el ListView dependiendo del scan seleccionado.
         historyList.setOnItemClickListener { _, _, position, _ ->
             val currentScan = scanList[position]
-            if(currentScan.scanType == "http") {
-                goToUrl(currentScan.scanCode)
-            } else {
-                goToMapActivity(currentScan.scanCode)
+
+            val intent = when (currentScan.scanType) {
+                "http" -> {
+                    focusCodeModel.goToUrl(currentScan.scanCode)
+                }
+                else -> {
+                    focusCodeModel.goToMapActivity(requireContext(), currentScan.scanCode)
+                }
             }
+
+            startActivity(intent)
         }
 
         return view
-    }
-
-    private fun goToMapActivity(scanCode: String) {
-        val mapIntent = Intent(requireContext(), MapActivity::class.java).apply {
-            putExtra("PLACE_LOCATION", scanCode)
-        }
-
-        startActivity(mapIntent)
-    }
-
-    private fun goToUrl(url: String) {
-        val uri:Uri = Uri.parse(url)
-        startActivity( Intent(Intent.ACTION_VIEW, uri) )
     }
 
 }

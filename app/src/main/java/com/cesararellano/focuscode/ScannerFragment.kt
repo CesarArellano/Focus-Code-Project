@@ -27,6 +27,7 @@ import java.util.*
 private const val CAMERA_REQUEST_CODE = 101
 
 class ScannerFragment : Fragment() {
+    private val focusCodeModel = FocusCodeModel()
     private lateinit var codeScanner: CodeScanner
 
     override fun onCreateView(
@@ -34,7 +35,7 @@ class ScannerFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val fragmentView = inflater.inflate(R.layout.fragment_scanner, container, false)
-
+        // Configurando permisos de cámara y del paquete CodeScanner.
         checkForPermissions()
         codeScanner(fragmentView)
 
@@ -42,11 +43,13 @@ class ScannerFragment : Fragment() {
     }
 
     private fun codeScanner(fragmentView:View) {
-        val database = AppDatabase.getDatabase(requireContext())
+        // Inicializamos referencias tanto para CodeScanner como para la base de datos.
+        val database = AppDatabase.getDatabase( requireContext() )
         val scannerView = fragmentView.findViewById<CodeScannerView>(R.id.scanner_view)
         codeScanner = CodeScanner(fragmentView.context, scannerView)
 
         codeScanner.apply {
+            // Configuramos todo lo necesario para CodeScanner.
             camera = CodeScanner.CAMERA_BACK
             formats = CodeScanner.ALL_FORMATS
 
@@ -57,7 +60,7 @@ class ScannerFragment : Fragment() {
 
             decodeCallback = DecodeCallback {
                 requireActivity().runOnUiThread {
-
+                    // Detiene CodeScanner.
                     codeScanner.stopPreview()
                     val scanType = when {
                         it.text.contains("http") -> {
@@ -67,35 +70,48 @@ class ScannerFragment : Fragment() {
                             "geo"
                         }
                     }
+
+                    // Se crea una instancia de ScanItem.
                     val scan = ScanItem(it.text, Calendar.getInstance().time.toString(), scanType)
-                    //Acción asíncrona (Corrutina)
+
+                    //Acción asíncrona (Corrutina) para hacer un registro en la BD
                     CoroutineScope(Dispatchers.IO).launch {
                         database.scans().insertScan(scan)
                     }
 
-                    if(scanType == "http") {
-                        goToUrl(scan.scanCode)
-                    } else {
-                        goToMapActivity(scan.scanCode)
+                    val intent = when (scanType) {
+                        "http" -> {
+                            focusCodeModel.goToUrl(scan.scanCode)
+                        }
+                        else -> {
+                            focusCodeModel.goToMapActivity(requireContext(), scan.scanCode)
+                        }
                     }
+
+                    // Navega a la Intent correspondiente.
+                    startActivity(intent)
+                    // Lo redirige al History Fragment.
                     Navigation.findNavController(fragmentView).navigate(R.id.historyFragment)
                 }
             }
 
             errorCallback = ErrorCallback {
                 requireActivity().runOnUiThread {
+                    // Si surge un error con CodeScanner por permisos de cámara se abrirá la app de ajustes de Android de esta misma app para conceder los permisos necesarios.
                     goToSettingsApp()
                     Toast.makeText(context, "Por favor active el permiso de la cámara, si desea escanear", Toast.LENGTH_LONG).show()
                 }
             }
         }
 
+        // Cuando se scannerView está activo, se da comienzo a escanear.
         scannerView.setOnClickListener {
             codeScanner.startPreview()
         }
     }
 
 
+    // Se hace el request para dar permisos de cámara.
     private fun checkForPermissions() {
         val permission = android.Manifest.permission.CAMERA
         when {
@@ -107,7 +123,7 @@ class ScannerFragment : Fragment() {
         }
     }
 
-
+    // Se sobreescribe el método para saber qué hacer al respecto con CodeScanner.
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -121,6 +137,7 @@ class ScannerFragment : Fragment() {
         }
     }
 
+    // Muestra el AlertDialog para dar los permisos de cámara.
     private fun showDialog() {
         val permission = android.Manifest.permission.CAMERA
 
@@ -136,6 +153,7 @@ class ScannerFragment : Fragment() {
         dialog.show()
     }
 
+    // Envía a los settings del teléfono.
     private fun goToSettingsApp() {
         val intend = Intent()
         intend.action = android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
@@ -147,6 +165,7 @@ class ScannerFragment : Fragment() {
         startActivity(intend)
     }
 
+    // En cualquier de los siguientes estados del ciclo de vida, realizaremos un dispose o inicializar CodeScanner.
     override fun onResume() {
         super.onResume()
         codeScanner.startPreview()
@@ -155,19 +174,6 @@ class ScannerFragment : Fragment() {
     override fun onPause() {
         super.onPause()
         codeScanner.releaseResources()
-    }
-
-    private fun goToMapActivity(scanCode: String) {
-        val mapIntent = Intent(requireContext(), MapActivity::class.java).apply {
-            putExtra("PLACE_LOCATION", scanCode)
-        }
-
-        startActivity(mapIntent)
-    }
-
-    private fun goToUrl(url: String) {
-        val uri:Uri = Uri.parse(url)
-        startActivity( Intent(Intent.ACTION_VIEW, uri) )
     }
 }
 
