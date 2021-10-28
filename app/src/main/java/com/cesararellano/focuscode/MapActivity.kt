@@ -27,7 +27,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
-        // Recibimos el extra con la coordenadas del mapa.
+        // Recibimos el extra con las coordenadas del mapa.
         var placeLocation: String = intent.getStringExtra("PLACE_LOCATION") ?: "geo:-25.363,131.044"
 
         if( !placeLocation.contains("geo") ) {
@@ -38,7 +38,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         createFragment()
     }
 
-    // Creación del menú para reubicar en la ubicacón del lugar escaneado.
+    // Creación del menú para reubicar en las coordenadas del lugar escaneado.
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.map_menu, menu)
         return super.onCreateOptionsMenu(menu)
@@ -73,14 +73,14 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         createMarker( placeLocationCoordinates )
     }
 
-    // Con esta función creamos el marcador del lugar escaneado y ponemos un título por default.
+    // Con esta función creamos el marcador del lugar escaneado y ponemos un título por defecto en el mismo marcador.
     private fun createMarker(coordinates: LatLng) {
         val marker = MarkerOptions().position(coordinates).title("Lugar escaneado")
         map.addMarker(marker)
         moveGoogleMapsCamera(coordinates)
     }
 
-    // Función que convierte nuestra coordenadas de String a la clase LatLng de Google Maps.
+    // Función que convierte nuestras coordenadas de String a la clase LatLng de Google Maps.
     private fun getLatLng(scanCode:String): LatLng {
         val latLng = scanCode.substring(4).split(',')
         val lat = latLng[0].toDouble()

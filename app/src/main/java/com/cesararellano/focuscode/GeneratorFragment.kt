@@ -15,7 +15,7 @@ import android.widget.ImageView
 // Este fragmento es el encargado de generar ambos códigos, a partir de lo que pone el usuario en el EditText.
 private const val TAG = "GeneratorFragment"
 class GeneratorFragment : Fragment() {
-    // Se declaran las variables del UI.
+    // Se declaran las variables de la UI.
     private lateinit var textToConvertEditText: EditText
     private lateinit var generatorButton: Button
     private lateinit var shareButton: Button
