@@ -26,7 +26,9 @@ import java.io.File
 import java.io.FileOutputStream
 import java.lang.Exception
 
+// Este fragmento es el encargado de generar ambos códigos, a partir de lo que pone el usuario en el EditText.
 class GeneratorFragment : Fragment() {
+    // Se declaran las variables de la UI.
     private lateinit var textToConvertEditText: EditText
     private lateinit var generatorButton: Button
     private lateinit var shareButton: Button
@@ -39,6 +41,7 @@ class GeneratorFragment : Fragment() {
     ): View? {
         val generatorView = inflater.inflate(R.layout.fragment_generator, container, false)
 
+        // Se establece la referencia de los elementos de la UI.
         textToConvertEditText = generatorView.findViewById(R.id.textToConvertEditText)
         generatorButton = generatorView.findViewById(R.id.generatorButton)
         shareButton = generatorView.findViewById(R.id.shareButton)
@@ -46,6 +49,8 @@ class GeneratorFragment : Fragment() {
         barcodeImage = generatorView.findViewById(R.id.barcodeImage)
 
         shareButton.isEnabled = false
+
+        // Este botón será el encargado de generar los códigos y pintarlos en la vista.
         generatorButton.setOnClickListener{
             it.hideKeyboard()
             if( textToConvertEditText.text.isNotEmpty() ) {
@@ -54,6 +59,7 @@ class GeneratorFragment : Fragment() {
             }
         }
 
+        // Poder compartir los códigos en otras apps del teléfono.
         shareButton.setOnClickListener {
             shareScreenshot()
         }
@@ -137,6 +143,7 @@ class GeneratorFragment : Fragment() {
 
     }
 
+    // Función útil para ocultar el teclado.
     private fun View.hideKeyboard() {
         val inputManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputManager.hideSoftInputFromWindow(windowToken, 0)

@@ -15,15 +15,11 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.gms.ads.AdView
 
+// Este fragment es el encargado de mostrar las opciones que tiene la app.
 class SettingsFragment : Fragment() {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var removeAdsButton: Button
     private lateinit var adBanner: AdView
-
-    override fun onResume() {
-        super.onResume()
-        buildDropdownItems(requireView())
-    }
 
     @SuppressLint("CommitPrefEdits")
     override fun onCreateView(
@@ -38,11 +34,17 @@ class SettingsFragment : Fragment() {
         sharedPreferences = view.context.getSharedPreferences("SHARED_PREF", Context.MODE_PRIVATE)
         adBanner = requireActivity().findViewById(R.id.mainBanner)
         removeAdsButton = view.findViewById(R.id.removeAdsButton)
-        removeAdsButton.setOnClickListener{
+        removeAdsButton.setOnClickListener {
             showDialog()
         }
 
         return view
+    }
+
+    // Construimos de nuevo los items si es que se destruyen en alguna etapa del ciclo de vida.
+    override fun onResume() {
+        super.onResume()
+        buildDropdownItems(requireView())
     }
 
     override fun onStart() {
@@ -73,12 +75,14 @@ class SettingsFragment : Fragment() {
         alert.show() // Despliega en pantalla el AlertDialog.
     }
 
+    // Creamos los elementos del Dropdown para la selección del tema.
     private fun buildDropdownItems(view: View) {
         val themes = resources.getStringArray(R.array.themes)
         val arrayAdapter = ArrayAdapter(requireContext(), R.layout.theme_dropdown_item, themes)
         val themeDropdown = view.findViewById<AutoCompleteTextView>(R.id.themeDropdown)
         themeDropdown.setAdapter( arrayAdapter )
 
+        // Establecemos las acciones del los items del dropdown.
         themeDropdown.setOnItemClickListener{ _, _, position, _ ->
             val userTheme = when(position) {
                 0 -> AppCompatDelegate.MODE_NIGHT_NO

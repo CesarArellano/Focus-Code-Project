@@ -26,8 +26,11 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 private const val CAMERA_REQUEST_CODE = 101
+
+// Este fragment es donde se escanean los códigos QR y los códigos de barras.
 class ScannerFragment : Fragment() {
     private lateinit var codeScanner: CodeScanner
+    private val focusCodeModel = FocusCodeModel()
     private lateinit var dateFormat: SimpleDateFormat
 
     override fun onCreateView(
@@ -36,29 +39,24 @@ class ScannerFragment : Fragment() {
     ): View {
         val fragmentView = inflater.inflate(R.layout.fragment_scanner, container, false)
 
+        // Estableciendo el formato de la fecha que tendrán los scans.
         dateFormat = SimpleDateFormat( "'Fecha:' dd-MM-yyyy, HH:mm", Locale.getDefault() )
+
+        // Configurando permisos de la cámara y del paquete CodeScanner.
         checkForPermissions()
         codeScanner(fragmentView)
 
         return fragmentView
     }
 
-    override fun onResume() {
-        super.onResume()
-        codeScanner.startPreview()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        codeScanner.releaseResources()
-    }
-
+    // Inicializamos referencias tanto para CodeScanner como para la base de datos.
     private fun codeScanner(fragmentView:View) {
         val database = AppDatabase.getDatabase(requireContext())
         val scannerView = fragmentView.findViewById<CodeScannerView>(R.id.scanner_view)
         codeScanner = CodeScanner(fragmentView.context, scannerView)
 
         codeScanner.apply {
+            // Configuramos lo necesario para que funcione CodeScanner como nosotros queremos.
             camera = CodeScanner.CAMERA_BACK
             formats = CodeScanner.ALL_FORMATS
 
@@ -69,56 +67,59 @@ class ScannerFragment : Fragment() {
 
             decodeCallback = DecodeCallback {
                 requireActivity().runOnUiThread {
-
+                    // Detiene CodeScanner.
                     codeScanner.stopPreview()
                     val scanType = when {
                         it.text.contains("http")-> {
                             "http"
                         }
-                        it.text.contains("geo")-> {
+                        else -> {
                             "geo"
                         }
-                        else -> {
-                            "other"
-                        }
                     }
+                    // String de la fecha actual con formato.
                     val currentDate = dateFormat.format( Date() )
+                    // Se crea una instancia de ScanItem.
                     val scan = ScanItem(it.text, currentDate, scanType)
-                    //Acción asíncrona (Corrutina)
+
+                    // Acción asíncrona (corrutina) para hacer un registro en la BD
                     CoroutineScope(Dispatchers.IO).launch {
                         database.scans().insertScan(scan)
                     }
 
-                    when( scanType ) {
-                        "http"-> {
-                            goToUrl(scan.scanCode)
-                        }
-                        "geo" -> {
-                            goToMapActivity(scan.scanCode)
+                    val intent = when (scanType) {
+                        "http" -> {
+                            focusCodeModel.goToUrl(scan.scanCode)
                         }
                         else -> {
-                            Toast.makeText(context, "Texto escaneado: ${ scan.scanCode }", Toast.LENGTH_LONG).show()
+                            focusCodeModel.goToMapActivity(requireContext(), scan.scanCode)
                         }
                     }
 
+                    // Navega al Intent correspondiente.
+                    startActivity(intent)
+
+                    // Lo redirige al History Fragment.
                     Navigation.findNavController(fragmentView).navigate(R.id.historyFragment)
                 }
             }
 
             errorCallback = ErrorCallback {
                 requireActivity().runOnUiThread {
+                    // Si surge un error con CodeScanner por permisos de la cámara se abrirá la app de ajustes de Android de esta misma app para conceder los permisos necesarios.
                     goToSettingsApp()
                     Toast.makeText(context, "Por favor active el permiso de la cámara, si desea escanear", Toast.LENGTH_LONG).show()
                 }
             }
         }
 
+        // Cuando scannerView esté inicializado, se da comienzo a escanear.
         scannerView.setOnClickListener {
             codeScanner.startPreview()
         }
     }
 
-
+    // Se hace el request para dar permisos de la cámara.
     private fun checkForPermissions() {
         val permission = android.Manifest.permission.CAMERA
         when {
@@ -130,7 +131,7 @@ class ScannerFragment : Fragment() {
         }
     }
 
-
+    // Se sobreescribe el método para saber qué hacer al respecto con CodeScanner.
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -144,6 +145,7 @@ class ScannerFragment : Fragment() {
         }
     }
 
+    // Muestra el AlertDialog para dar los permisos de la cámara.
     private fun showDialog() {
         val permission = android.Manifest.permission.CAMERA
 
@@ -159,6 +161,7 @@ class ScannerFragment : Fragment() {
         dialog.show()
     }
 
+    // Envía a los settings del teléfono.
     private fun goToSettingsApp() {
         val intend = Intent()
         intend.action = android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
@@ -170,17 +173,15 @@ class ScannerFragment : Fragment() {
         startActivity(intend)
     }
 
-    private fun goToMapActivity(scanCode: String) {
-        val mapIntent = Intent(requireContext(), MapActivity::class.java).apply {
-            putExtra("PLACE_LOCATION", scanCode)
-        }
-
-        startActivity(mapIntent)
+    // En cualquier de los siguientes estados del ciclo de vida, realizaremos un start o un dispose a CodeScanner.
+    override fun onResume() {
+        super.onResume()
+        codeScanner.startPreview()
     }
 
-    private fun goToUrl(url: String) {
-        val uri:Uri = Uri.parse(url)
-        startActivity( Intent(Intent.ACTION_VIEW, uri) )
+    override fun onPause() {
+        super.onPause()
+        codeScanner.releaseResources()
     }
 }
 

@@ -1,19 +1,23 @@
 package com.cesararellano.focuscode
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import android.widget.ListView
-import android.widget.Toast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+// En este fragment se visualiza el historial de scans
 class HistoryFragment : Fragment() {
+    private val focusCodeModel = FocusCodeModel()
+    private var scanList = emptyList<ScanItem>()
+    private lateinit var database: AppDatabase
+    private lateinit var historyList: ListView
+    private lateinit var emptyScansImage: ImageView
 
+    // En este método le decimos que si hay opciones del menú que mostrar en el action bar.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -25,16 +29,21 @@ class HistoryFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_history, container, false)
-        var scanList = emptyList<ScanItem>()
-        val database = AppDatabase.getDatabase(view.context)
-        val historyList = view.findViewById<ListView>(R.id.historyList)
-        val emptyScansImage = view.findViewById<ImageView>(R.id.emptyScansImage)
+        // Obteniendo la instancia de la BD.
+        database = AppDatabase.getDatabase(view.context)
+        // Estableciendo referencias de los elementos de la UI.
+        historyList = view.findViewById(R.id.historyList)
+        emptyScansImage = view.findViewById(R.id.emptyScansImage)
 
+        // Poniendo un observer, estilo de listener que escucha los cambios y refresca la vista.
         database.scans().getAllScans().observe( viewLifecycleOwner, {
             scanList = it
+
+            // Adapter del ListView.
             val adapter = ScansAdapter(requireContext(), scanList)
             historyList.adapter = adapter
 
+            // Evalúa que vista debe mostrar.
             if( scanList.isEmpty() ) {
                 historyList.visibility = View.GONE
                 emptyScansImage.visibility = View.VISIBLE
@@ -44,48 +53,37 @@ class HistoryFragment : Fragment() {
             }
         })
 
+        // Se establecen las acciones que hará el ListView dependiendo del scan seleccionado.
         historyList.setOnItemClickListener { _, _, position, _ ->
             val currentScan = scanList[position]
-            when( currentScan.scanCode ) {
-                "http"-> {
-                    goToUrl(currentScan.scanCode)
-                }
-                "geo" -> {
-                    goToMapActivity(currentScan.scanCode)
+
+            val intent = when (currentScan.scanType) {
+                "http" -> {
+                    focusCodeModel.goToUrl(currentScan.scanCode)
                 }
                 else -> {
-                    Toast.makeText(context, "Texto escaneado: ${ currentScan.scanCode }", Toast.LENGTH_LONG).show()
+                    focusCodeModel.goToMapActivity(requireContext(), currentScan.scanCode)
                 }
             }
+
+            startActivity(intent)
         }
 
         return view
     }
 
-    private fun goToMapActivity(scanCode: String) {
-        val mapIntent = Intent( requireContext(), MapActivity::class.java ).apply {
-            putExtra("PLACE_LOCATION", scanCode)
-        }
-
-        startActivity(mapIntent)
-    }
-
-    private fun goToUrl(url: String) {
-        val uri:Uri = Uri.parse(url)
-        startActivity( Intent(Intent.ACTION_VIEW, uri) )
-    }
-
+    // Inflando opción del menú.
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.history_fragment_menu, menu)
     }
 
+    // Estableciendo acciones del botón.
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         when( item.itemId ) {
-            R.id.deleteHistoryButton -> {
-                val database = AppDatabase.getDatabase( requireContext().applicationContext )
-                //Acción asíncrona (Corrutina)
+            R.id.deleteHistoryButton -> { // Acción que hará el botón de deleteHistory
+                // Acción asíncrona (Corrutina) para eliminar los scans.
                 CoroutineScope(Dispatchers.IO).launch {
                     database.scans().deleteAllScans()
                 }
