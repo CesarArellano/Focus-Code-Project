@@ -47,12 +47,14 @@ class SettingsFragment : Fragment() {
         buildDropdownItems(requireView())
     }
 
+    // En esta opción vemos si removemos o no los anuncios, dependiendo si tiene la versión premium.
     override fun onStart() {
         super.onStart()
         val premiumMode = sharedPreferences.getBoolean("premiumMode", false)
         if( premiumMode ) removeAdsButton.visibility = View.GONE
     }
 
+    // Alert Dialog que simula el pago para remover anuncios, si le da en confirmar, establece el modo premium en los SharedPreferences.
     private fun showDialog() {
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("Compra")

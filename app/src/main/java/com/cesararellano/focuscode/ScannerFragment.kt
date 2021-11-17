@@ -87,6 +87,7 @@ class ScannerFragment : Fragment() {
                         database.scans().insertScan(scan)
                     }
 
+                    // Redirigimos al usuario.
                     val intent = when (scanType) {
                         "http" -> {
                             focusCodeModel.goToUrl(scan.scanCode)
@@ -173,7 +174,7 @@ class ScannerFragment : Fragment() {
         startActivity(intend)
     }
 
-    // En cualquier de los siguientes estados del ciclo de vida, realizaremos un start o un dispose a CodeScanner.
+    // En cualquiera de los siguientes estados del ciclo de vida, realizaremos un start o un dispose a CodeScanner.
     override fun onResume() {
         super.onResume()
         codeScanner.startPreview()

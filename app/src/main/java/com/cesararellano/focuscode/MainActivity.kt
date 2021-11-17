@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    // En este punto del ciclo de vida se inicializan los anuncios y se obtienen las preferencis del usuario.
+    // En este punto del ciclo de vida se inicializan los anuncios y se obtienen las preferencias del usuario.
     override fun onStart() {
         super.onStart()
         val userTheme = sharedPreferences.getInt("userTheme", 0)

@@ -17,7 +17,7 @@ class HistoryFragment : Fragment() {
     private lateinit var historyList: ListView
     private lateinit var emptyScansImage: ImageView
 
-    // En este método le decimos que si hay opciones del menú que mostrar en el action bar.
+    // En este método le decimos que hay opciones del menú para mostrar en el action bar.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -35,7 +35,7 @@ class HistoryFragment : Fragment() {
         historyList = view.findViewById(R.id.historyList)
         emptyScansImage = view.findViewById(R.id.emptyScansImage)
 
-        // Poniendo un observer, estilo de listener que escucha los cambios y refresca la vista.
+        // Poniendo un observer (estilo de listener) que escucha los cambios y refresca la vista.
         database.scans().getAllScans().observe( viewLifecycleOwner, {
             scanList = it
 

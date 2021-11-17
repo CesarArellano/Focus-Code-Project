@@ -16,7 +16,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
-    // Inicializando variables.
+    // Declarando variables.
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var map: GoogleMap
     private lateinit var placeLocationCoordinates: LatLng
@@ -25,8 +25,17 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
         // Recibimos el extra con las coordenadas del mapa.
-        val placeLocation = intent.getStringExtra("PLACE_LOCATION") ?: "geo:-25.363,131.044"
+        val defaultCoors = "geo:-25.363,131.044"
+        var placeLocation = intent.getStringExtra("PLACE_LOCATION") ?: defaultCoors
+
+        // Validación si es diferente de http o geo.
+        if( !placeLocation.contains("geo") ) {
+            placeLocation = defaultCoors
+        }
+
+        // Obtenemos las coordenadas.
         placeLocationCoordinates = getLatLng(placeLocation)
+        // Obtenemos una instancia para modificar los sharedPreferences, para ser usado en onStart.
         sharedPreferences = getSharedPreferences("SHARED_PREF", Context.MODE_PRIVATE)
         settingsActionBar()
         createFragment()
@@ -39,21 +48,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         if( !premiumMode ) initLoadAds()
     }
 
-    // Creación del menú para reubicar en las coordenadas del lugar escaneado.
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.map_menu, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
-        when( item.itemId ) {
-            R.id.placeLocationItem -> {
-                moveGoogleMapsCamera(placeLocationCoordinates)
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
 
     // Configura el actionBar con un nuevo título y la posibilidad para poder de regresar al Main Activity.
     private fun settingsActionBar() {
@@ -98,16 +92,32 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         )
     }
 
+    // Inicializando la carga de anuncios en modo test en esta Activity, el banner es distinto al de MainActivity.
+    private fun initLoadAds() {
+        val mapBanner = findViewById<AdView>(R.id.mapBanner)
+        val adRequest = AdRequest.Builder().build()
+        mapBanner.loadAd(adRequest)
+    }
+
     // Habilita la opción de poder regresar al MainActivity.
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
         return true
     }
 
-    // Inicializando la carga de anuncios en modo test en esta Activity, el banner es distinto al de MainActivity.
-    private fun initLoadAds() {
-        val mapBanner = findViewById<AdView>(R.id.mapBanner)
-        val adRequest = AdRequest.Builder().build()
-        mapBanner.loadAd(adRequest)
+    // Creación del menú para reubicar en las coordenadas del lugar escaneado.
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.map_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        when( item.itemId ) {
+            R.id.placeLocationItem -> {
+                moveGoogleMapsCamera(placeLocationCoordinates)
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

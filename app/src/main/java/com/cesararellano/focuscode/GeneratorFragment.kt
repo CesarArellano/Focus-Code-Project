@@ -7,6 +7,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -39,23 +40,23 @@ class GeneratorFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val generatorView = inflater.inflate(R.layout.fragment_generator, container, false)
+        val view = inflater.inflate(R.layout.fragment_generator, container, false)
 
         // Se establece la referencia de los elementos de la UI.
-        textToConvertEditText = generatorView.findViewById(R.id.textToConvertEditText)
-        generatorButton = generatorView.findViewById(R.id.generatorButton)
-        shareButton = generatorView.findViewById(R.id.shareButton)
-        qrCodeImage = generatorView.findViewById(R.id.qrCodeImage)
-        barcodeImage = generatorView.findViewById(R.id.barcodeImage)
+        textToConvertEditText = view.findViewById(R.id.textToConvertEditText)
+        generatorButton = view.findViewById(R.id.generatorButton)
+        shareButton = view.findViewById(R.id.shareButton)
+        qrCodeImage = view.findViewById(R.id.qrCodeImage)
+        barcodeImage = view.findViewById(R.id.barcodeImage)
 
         shareButton.isEnabled = false
 
         // Este botón será el encargado de generar los códigos y pintarlos en la vista.
         generatorButton.setOnClickListener{
-            it.hideKeyboard()
+            it.hideKeyboard() // Esconde el teclado
             if( textToConvertEditText.text.isNotEmpty() ) {
-                getCode()
-                shareButton.isEnabled = true
+                getCode() // Genera los códigos
+                shareButton.isEnabled = true // Habilita la opción de compartir.
             }
         }
 
@@ -65,51 +66,64 @@ class GeneratorFragment : Fragment() {
         }
 
 
-        return generatorView
+        return view
     }
 
+    // Genera los códigos (QR y Barcode)
     private fun getCode() {
         try {
-            generateQrCode()
-            generateBarcode()
+            val qrBitmap = generateCode(BarcodeFormat.QR_CODE, 225,255 )
+            qrCodeImage.setImageBitmap(qrBitmap)
+            val barcodeBitmap = generateCode(BarcodeFormat.CODE_128, 250, 100)
+            barcodeImage.setImageBitmap(barcodeBitmap)
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
-    private fun generateQrCode() {
+    // Función encargada de generar ambos códigos, se le pasa el codeFormat para saber cómo va a genera el Bitmap junto con sus medidas (ancho y alto).
+    private fun generateCode( codeFormat:BarcodeFormat, width: Int, height: Int ):Bitmap {
         val textToConvert = textToConvertEditText.text.toString()
         val multiFormatWriter = MultiFormatWriter()
-        val bitMatrix: BitMatrix = multiFormatWriter.encode(textToConvert, BarcodeFormat.QR_CODE, 225, 225)
+        val bitMatrix: BitMatrix = multiFormatWriter.encode(textToConvert, codeFormat, width, height)
         val barcodeEncoder = BarcodeEncoder()
-        val bitmap: Bitmap = barcodeEncoder.createBitmap(bitMatrix)
-        qrCodeImage.setImageBitmap(bitmap)
+        return barcodeEncoder.createBitmap(bitMatrix)
     }
 
-    private fun generateBarcode() {
-        val textToConvert = textToConvertEditText.text.toString()
-        val multiFormatWriter = MultiFormatWriter()
-        val bitMatrix: BitMatrix = multiFormatWriter.encode(textToConvert, BarcodeFormat.CODE_128, 250, 100, null)
-        val barcodeEncoder = BarcodeEncoder()
-        val bitmap: Bitmap = barcodeEncoder.createBitmap(bitMatrix)
-        barcodeImage.setImageBitmap(bitmap)
+    // Función utilizada para tomar un screenshot de los códigos (QR y Barcode) y para compartir la imagen generada con otras apps que tenga instalada el teléfono.
+    private fun shareScreenshot() {
+        try {
+            val imageUri = takeScreenshot() // Devuelve el Uri donde se encuentra el screenshot.
+            val shareIntent = Intent().apply { // Intent configurado para compartir el screenshot en otras apps.
+                action = Intent.ACTION_SEND
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                flags =  Intent.FLAG_ACTIVITY_NEW_TASK
+                putExtra(Intent.EXTRA_STREAM, imageUri)
+                type = "image/jpeg"
+            }
+            startActivity( Intent.createChooser(shareIntent, "Compartiendo código") ) // Inicia el Intent.
+        } catch (e: Exception) { // Si algo malo sucede, mostrará un Toast.
+            e.printStackTrace()
+            Toast.makeText( requireContext(),"Ocurrió un error al compartir códigos", Toast.LENGTH_LONG).show()
+        }
+
     }
 
+    // Función que toma un screenshot de los códigos, y retonar el Uri donde se almacena dicho screenshot.
     private fun takeScreenshot(): Uri {
 
         val containerView = requireView().findViewById<ConstraintLayout>(R.id.codeContainer)
         val bitmap = Bitmap.createBitmap(containerView.width, containerView.height, Bitmap.Config.ARGB_8888)
-        //Bind a canvas to it
+
+        // Convertimos un bitmap a un Canvas para modificar su estilos.
         val canvas = Canvas(bitmap)
-        //Get the view's background
-        val bgDrawable = containerView.background
-        if (bgDrawable != null) //has background drawable, then draw it on the canvas
-            bgDrawable.draw(canvas)
-        else  //does not have background drawable, then draw white background on the canvas
-            canvas.drawColor(Color.WHITE)
-        // draw the view on the canvas
+
+        // El background del containerView se pinta de blanco.
+        canvas.drawColor(Color.WHITE)
         containerView.draw(canvas)
-        val screenshotFile = File(requireContext().externalCacheDir, "codes.jpeg")
+
+        // Proceso de compresión en JPEG y combinación del Bitmap con el photoPath.
+        val screenshotFile = getScreenshotFile()
         val fOutStream = FileOutputStream(screenshotFile)
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fOutStream)
         fOutStream.flush()
@@ -121,26 +135,11 @@ class GeneratorFragment : Fragment() {
             screenshotFile
         )
     }
-    private fun shareScreenshot() {
-        try {
-            val imageUri = takeScreenshot()
-            val shareIntent = Intent().apply {
-                action = Intent.ACTION_SEND
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                flags =  Intent.FLAG_ACTIVITY_NEW_TASK
-                putExtra(Intent.EXTRA_STREAM, imageUri)
-                type = "image/jpeg"
-            }
-            startActivity( Intent.createChooser(shareIntent, "Compartiendo código") )
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(
-                requireContext(),
-                "Ocurrió un error al compartir códigos",
-                Toast.LENGTH_LONG
-            ).show()
-        }
 
+    // Esta función retorna un File para el screenshot
+    private fun getScreenshotFile(): File {
+        val photoPath = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File(photoPath, "codes.jpeg")
     }
 
     // Función útil para ocultar el teclado.
