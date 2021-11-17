@@ -19,6 +19,7 @@ import com.google.android.gms.ads.AdView
 class SettingsFragment : Fragment() {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var removeAdsButton: Button
+    private lateinit var restorePurchasesButton: Button
     private lateinit var adBanner: AdView
 
     @SuppressLint("CommitPrefEdits")
@@ -34,8 +35,14 @@ class SettingsFragment : Fragment() {
         sharedPreferences = view.context.getSharedPreferences("SHARED_PREF", Context.MODE_PRIVATE)
         adBanner = requireActivity().findViewById(R.id.mainBanner)
         removeAdsButton = view.findViewById(R.id.removeAdsButton)
+        restorePurchasesButton = view.findViewById(R.id.restorePurchasesButton)
+
         removeAdsButton.setOnClickListener {
-            showDialog()
+            showDialog("Compra", "¿Desea remover la publicidad pagando \$49 MXN?")
+        }
+
+        restorePurchasesButton.setOnClickListener {
+            showDialog("Restaurar compra", "¿Desea restaurar su compra de la app?")
         }
 
         return view
@@ -51,16 +58,20 @@ class SettingsFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         val premiumMode = sharedPreferences.getBoolean("premiumMode", false)
-        if( premiumMode ) removeAdsButton.visibility = View.GONE
+        if( premiumMode ) {
+            removeAdsButton.visibility = View.GONE
+            restorePurchasesButton.visibility = View.GONE
+        }
     }
 
-    // Alert Dialog que simula el pago para remover anuncios, si le da en confirmar, establece el modo premium en los SharedPreferences.
-    private fun showDialog() {
+    // Alert Dialog que simula o restaura el pago para remover anuncios, si le da en confirmar, establece el modo premium en los SharedPreferences.
+    private fun showDialog(title:String, msg: String) {
         val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("Compra")
-        builder.setMessage("¿Desea remover la publicidad pagando $49 MXN?")
+        builder.setTitle(title)
+        builder.setMessage(msg)
         builder.setPositiveButton("Confirmar") { dialog, _ -> // Confirma la eliminación de la cosa.
             removeAdsButton.visibility = View.GONE
+            restorePurchasesButton.visibility = View.GONE
             adBanner.isEnabled = false
             adBanner.visibility = View.GONE
             val editor: SharedPreferences.Editor = sharedPreferences.edit()

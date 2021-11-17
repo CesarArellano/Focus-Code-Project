@@ -81,7 +81,7 @@ class GeneratorFragment : Fragment() {
         }
     }
 
-    // Función encargada de generar ambos códigos, se le pasa el codeFormat para saber cómo va a genera el Bitmap junto con sus medidas (ancho y alto).
+    // Función encargada de generar ambos códigos, se le pasa el codeFormat para saber cómo va a generar el Bitmap junto con sus medidas (ancho y alto).
     private fun generateCode( codeFormat:BarcodeFormat, width: Int, height: Int ):Bitmap {
         val textToConvert = textToConvertEditText.text.toString()
         val multiFormatWriter = MultiFormatWriter()
@@ -90,7 +90,7 @@ class GeneratorFragment : Fragment() {
         return barcodeEncoder.createBitmap(bitMatrix)
     }
 
-    // Función utilizada para tomar un screenshot de los códigos (QR y Barcode) y para compartir la imagen generada con otras apps que tenga instalada el teléfono.
+    // Función utilizada para tomar un screenshot de los códigos (QR y Barcode) y para compartir la imagen generada con otras apps que tenga instaladas en su teléfono.
     private fun shareScreenshot() {
         try {
             val imageUri = takeScreenshot() // Devuelve el Uri donde se encuentra el screenshot.
@@ -115,7 +115,7 @@ class GeneratorFragment : Fragment() {
         val containerView = requireView().findViewById<ConstraintLayout>(R.id.codeContainer)
         val bitmap = Bitmap.createBitmap(containerView.width, containerView.height, Bitmap.Config.ARGB_8888)
 
-        // Convertimos un bitmap a un Canvas para modificar su estilos.
+        // Convertimos un Bitmap a un Canvas para modificar su estilos.
         val canvas = Canvas(bitmap)
 
         // El background del containerView se pinta de blanco.
@@ -131,7 +131,7 @@ class GeneratorFragment : Fragment() {
 
         return FileProvider.getUriForFile(
             requireContext(),
-            BuildConfig.APPLICATION_ID + ".provider",  //(app signature + ".provider" )
+            BuildConfig.APPLICATION_ID + ".provider",  //(APPLICATION_ID + ".provider" )
             screenshotFile
         )
     }

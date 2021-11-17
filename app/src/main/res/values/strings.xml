@@ -17,6 +17,7 @@
     <string name="placeLocationItem">Reubicar</string>
     <string name="deleteHistoryButton">Eliminar historial</string>
     <string name="emptyScansLabel">Sin Scans</string>
+    <string name="restorePurchasesButton">Restaurar compra</string>
     <string-array name="themes">
         <item >Claro</item>
         <item>Oscuro</item>

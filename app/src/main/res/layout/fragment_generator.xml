@@ -82,6 +82,7 @@
                 android:id="@+id/barcodeImage"
                 android:layout_width="250dp"
                 android:layout_height="100dp"
+                android:layout_marginTop="2dp"
                 android:layout_marginBottom="8dp"
                 android:contentDescription="@string/barcodeImageLabel"
                 android:src="@drawable/barcode_placeholder"

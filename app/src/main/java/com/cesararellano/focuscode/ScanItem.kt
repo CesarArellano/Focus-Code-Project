@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.io.Serializable
 
-// Esta clase es la entidad para la base de datos.
+// Esta clase es utilizada para cada registro de la base de datos.
 @Entity(tableName = "scans")
 class ScanItem(
     val scanCode: String,

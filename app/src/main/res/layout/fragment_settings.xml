@@ -52,13 +52,24 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:paddingVertical="15dp"
-            android:paddingHorizontal="20dp"
             android:elevation="5dp"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="15dp"
             android:text="@string/removeAdsButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+        <Button
+            android:id="@+id/restorePurchasesButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/restorePurchasesButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/removeAdsButton" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
