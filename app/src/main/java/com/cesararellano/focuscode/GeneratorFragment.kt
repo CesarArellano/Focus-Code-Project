@@ -73,8 +73,9 @@ class GeneratorFragment : Fragment() {
     private fun getCode() {
         try {
             val qrBitmap = generateCode(BarcodeFormat.QR_CODE, 225,255 )
-            qrCodeImage.setImageBitmap(qrBitmap)
             val barcodeBitmap = generateCode(BarcodeFormat.CODE_128, 250, 100)
+
+            qrCodeImage.setImageBitmap(qrBitmap)
             barcodeImage.setImageBitmap(barcodeBitmap)
         } catch (e: Exception) {
             e.printStackTrace()

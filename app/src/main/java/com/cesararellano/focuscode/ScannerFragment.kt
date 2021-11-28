@@ -114,7 +114,7 @@ class ScannerFragment : Fragment() {
             }
         }
 
-        // Cuando scannerView esté inicializado, se da comienzo a escanear.
+        // Cuando scannerView esté inicializado, comenzará a escanear.
         scannerView.setOnClickListener {
             codeScanner.startPreview()
         }

@@ -9,7 +9,7 @@ import androidx.room.RoomDatabase
 // Le indicamos que las entidades serán de tipo ScanItem.
 @Database(entities = [ScanItem::class], version = 1)
 abstract class AppDatabase: RoomDatabase() {
-    // Hacemos uso de nuestra interfaz ScansDao
+    // Hacemos uso de nuestra función ScansDao, la cual se encarga de manejar la BD.
     abstract fun scans(): ScansDao
 
     // Hacemos un companion object para realizar la instancia de nuestra base de datos sólo si es necesario.

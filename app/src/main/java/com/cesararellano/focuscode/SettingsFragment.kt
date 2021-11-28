@@ -69,7 +69,7 @@ class SettingsFragment : Fragment() {
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle(title)
         builder.setMessage(msg)
-        builder.setPositiveButton("Confirmar") { dialog, _ -> // Confirma la eliminación de la cosa.
+        builder.setPositiveButton("Confirmar") { dialog, _ -> // Confirma acción
             removeAdsButton.visibility = View.GONE
             restorePurchasesButton.visibility = View.GONE
             adBanner.isEnabled = false
@@ -80,7 +80,7 @@ class SettingsFragment : Fragment() {
             dialog.cancel()
         }
 
-        builder.setNegativeButton("Cancelar") { dialog, _ -> // Cancela la acción de eliminar.
+        builder.setNegativeButton("Cancelar") { dialog, _ -> // Cancela la acción
             dialog.cancel()
         }
 
